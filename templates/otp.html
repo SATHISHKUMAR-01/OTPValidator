@@ -5,33 +5,50 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login Form</title>
+    <title>OTP Form</title>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
         crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="../static/css/index.css">
+    <link rel="stylesheet" href="../static/css/otp.css">
 
 </head>
 
 <body>
 
-    <form action="http://localhost:5000/login" method="POST">
-        <div class="d-flex justify-content-center">
-            <input type="text" name="pin-1" id="" maxlength="1">
-            <input type="text" name="pin-2" id="" maxlength="1">
-            <input type="text" name="pin-3" id="" maxlength="1">
-            <input type="text" name="pin-4" id="" maxlength="1">
-            <input type="text" name="pin-5" id="" maxlength="1">
-            <input type="text" name="pin-6" id="" maxlength="1">
-        </div>
-        <div class="text-center">
-            <input type="submit" class="btn btn-primary" value="LOGIN" name="login">
-        </div>
-    </form>
+    <div class="inner-body">
+        <h1 class="text-dark text-center fw-normal pt-3"> Enter the <strong>OTP</strong></h1>
+        <br>
+        <p class="text-center text-secondary fs-5">Attempts left : <span id="attempts">{{attempt}}</span></p>
+        <form action="http://localhost:5000/login" method="POST" class="otp-form">
+            <div class="otp-body">
+                <input type="text" name="pin-1" id="pin-one" maxlength="1"
+                    onkeyup="movetoNext('pin-one',this, 'pin-two')" onchange="changeBorder('pin-one',this)" required>
+                <input type="text" name="pin-2" id="pin-two" maxlength="1"
+                    onkeyup="movetoNext('pin-one',this, 'pin-three')" onchange="changeBorder('pin-two',this)" required>
+                <input type="text" name="pin-3" id="pin-three" maxlength="1"
+                    onkeyup="movetoNext('pin-two',this, 'pin-four')" onchange="changeBorder('pin-three',this)" required>
+                <input type="text" name="pin-4" id="pin-four" maxlength="1"
+                    onkeyup="movetoNext('pin-three',this, 'pin-five')" onchange="changeBorder('pin-four',this)"
+                    required>
+                <input type="text" name="pin-5" id="pin-five" maxlength="1"
+                    onkeyup="movetoNext('pin-four',this, 'pin-six')" onchange="changeBorder('pin-five',this)" required>
+                <input type="text" name="pin-6" id="pin-six" maxlength="1"
+                    onkeyup="movetoNext('pin-five',this, 'pin-six')" onchange="changeBorder('pin-six',this)" required>
+            </div>
+            <br>
+            <div class="text-center">
+                <input type="submit" class="btn btn-outline-dark" value="LOGIN" name="login">
+            </div>
+        </form>
+    </div>
+
+
 
 </body>
+
+<script src="../static/js/otp.js"></script>
 
 
 </html>

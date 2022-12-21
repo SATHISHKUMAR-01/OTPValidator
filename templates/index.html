@@ -21,18 +21,35 @@
 
     <div class="form-body">
 
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        {% for message in messages %} 
+        <p class="text-center text-warning fw-bolder fs-3 p-2 border  border-2 border-warning rounded m-3">{{ message }}</p>
+       {% endfor %}
+      {% endif %}
+      {% endwith %}
+
       <form action="http://localhost:5000/generateOTP" method="POST" class="form">
-        <h1 class="text-secondary p-3">Login Form</h1>
+        <h1 class="text-secondary">Login Form</h1>
 
         <br>
         <div class="mb-3">
-          <label for="exampleFormControlInput1" class="form-label">Email ID : </label>
+          <label for="exampleFormControlInput1" class="form-label"><i class="fa-solid fa-envelope"></i> Email ID :
+          </label>
           <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com"
             name="email">
         </div>
 
-        <div class="mb-3 text-center">
-          <input type="submit" class="btn btn-primary" value="SUBMIT" name="submit">
+        <div class="form-check mb-3">
+          <input class="form-check-input border border-1 border-secondary " type="checkbox" value=""
+            id="flexCheckDefault" required>
+          <label class="form-check-label" for="flexCheckDefault">
+            Accept <a href="" class="text-decoration-none">Terms & conditions</a>
+          </label>
+        </div>
+
+        <div class="mb-3 pt-3 text-center">
+          <input type="submit" class="btn btn-dark" value="SUBMIT" name="submit">
         </div>
       </form>
 
