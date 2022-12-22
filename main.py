@@ -1,6 +1,9 @@
 from flask import Flask, render_template, request,session,flash, redirect, url_for
 import pyotp
 from flask_session import Session
+import smtplib, ssl
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
@@ -13,18 +16,68 @@ def getOTP():
     otp = totp.now()
     return otp
 
+# Function to send Email
+def sendEmail(email,otp):
+    
+    smtp_server = "smtp.gmail.com"
+    port = 587  
+    sender_email = ""
+    password = ""
+    receiver_email = email
+
+    context = ssl.create_default_context()
+    message = MIMEMultipart("alternative")
+    message["Subject"] = "Login - OTP "
+
+    html_head = """\
+    <html>
+    <body>
+    <h1 style="text-align:center"> OTP for Login </h1>
+    <div style="display:flex">
+    <p style="width:25px;height:40px;text-align:center;margin:10px;padding:10px;border:2px solid black;border-radius:10px;font-size:24px">""" + otp[0] +"""</p>
+    <p style="width:25px;height:40px;text-align:center;margin:10px;padding:10px;border:2px solid black;border-radius:10px;font-size:24px"> """ + otp[1] +"""  </p>
+    <p style="width:25px;height:40px;text-align:center;margin:10px;padding:10px;border:2px solid black;border-radius:10px;font-size:24px"> """ + otp[2] +""" </p>
+    <p style="width:25px;height:40px;text-align:center;margin:10px;padding:10px;border:2px solid black;border-radius:10px;font-size:24px"> """ + otp[3] +""" </p> 
+    <p style="width:25px;height:40px;text-align:center;margin:10px;padding:10px;border:2px solid black;border-radius:10px;font-size:24px"> """ + otp[4] +""" </p>
+    <p style="width:25px;height:40px;text-align:center;margin:10px;padding:10px;border:2px solid black;border-radius:10px;font-size:24px"> """ + otp[5] +""" </p>
+    </div>  
+    </body>
+    </html>
+    """
+    part1 = MIMEText(html_head, "html")
+    message.attach(part1)
+
+    try:
+        server = smtplib.SMTP(smtp_server,port)
+        server.ehlo() 
+        server.starttls(context=context) 
+        server.ehlo() 
+        server.login(sender_email, password)
+        server.sendmail(sender_email, receiver_email, message.as_string())
+    except Exception as e:
+        print("ERROR : ",e)
+        return False
+    
+    server.quit() 
+    return True
+
+
 # Route for index Page
 @app.route('/')
 def showLogin():
     return render_template('index.html')
 
-# Route to get OTP
+# Route to get OTP and email
 @app.route('/generateOTP', methods = ['POST'])
 def generateOTP():
     email = request.form['email']
     session['attempts'] = 3
     session['otp'] = getOTP()
-    return render_template('otp.html', attempt = session['attempts'])
+    if(sendEmail(email,session['otp'])):
+        return render_template('otp.html', attempt = session['attempts'])
+    else:
+        flash('Server Error! Try Again', 'info')
+        return render_template('index.html')
 
 # Route to enter the OTP
 @app.route('/login', methods = ['POST'])
@@ -59,4 +112,4 @@ def success():
    return render_template('success.html')
     
 if __name__ == '__main__':
-   app.run(debug=True)
+    app.run(debug=True)
